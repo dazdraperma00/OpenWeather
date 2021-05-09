@@ -13,5 +13,3 @@ def get_config(path):
 
 
 config = get_config(config_path)
-
-print(config)
