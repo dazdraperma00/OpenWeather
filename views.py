@@ -11,8 +11,16 @@ async def search(request):
 
     city_ids = params['ids'].strip(',').split(',')
 
+    try:
+        city_names = [request.app['locations'][int(city_id)] for city_id in city_ids]
+    except ValueError:
+        message = "Incorrect id. Id must be int."
+        return web.HTTPNotFound(reason=message)
+    except KeyError:
+        message = "Incorrect id. There is no such supported id"
+        return web.HTTPNotFound(reason=message)
+
     results = []
-    city_names = [request.app['locations'][int(city_id)] for city_id in city_ids]
     weather_getter = request.app['weather_getter']  # Сущность для запросов во внешний источник
     aws = [weather_getter.get_whether(city) for city in city_names]
     for fut in asyncio.as_completed(aws):
